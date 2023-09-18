@@ -36,13 +36,23 @@ public class Main {
 			else if (menu == 2) {
 				System.out.println("Digite o produto: ");
 				String produto = sc.next();
-				System.out.println("Digite o codigo do produto"); // fazer tratamento codigo repetido
+				System.out.println("Digite o codigo do produto");
 				int codigo = sc.nextInt();
 				sc.nextLine();
+
+				for (Produto produto5 : listaProdutos) { // TRATAMENTO CODIGO REPETIDO
+					while (produto5.getCodProduto() == codigo) {
+						System.out.println("Codigo de produto ja existe tente novamente:");
+						codigo = sc.nextInt();
+						sc.nextLine();
+					}
+				}
+
 				System.out.println("Deseja adicionar estoque(y/n)");
 				String choice = sc.nextLine();
 
 				if (choice.equals("y")) {
+
 					int quantidade = -1;
 					System.out.println("Digite a quantidade do produto");
 
@@ -52,15 +62,13 @@ public class Main {
 							System.out.println("Quantidade negativa, tente novamente com um numero positvo.");
 						}
 					}
-
 					Produto novoProduto = new Produto(produto, codigo, quantidade);
 					listaProdutos.add(novoProduto);
-				}
-
-				else {
+				} else {
 					Produto novoProduto = new Produto(produto, codigo, 0);
 					listaProdutos.add(novoProduto);
 				}
+
 			}
 
 			else if (menu == 3) { // EDITAR ESTOQUE
@@ -180,6 +188,6 @@ public class Main {
 		}
 
 		sc.close();
-		System.out.println("Sistema encerrado");
+		System.out.println("Sistema encerrado.");
 	}
 }
