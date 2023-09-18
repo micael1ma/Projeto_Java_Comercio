@@ -29,63 +29,62 @@ public class Main {
 			System.out.println("_____________________________________________");
 			menu = sc.nextInt();
 
-			if (menu == 1) {
-				g.listarProdutos(listaProdutos);
+			if (menu == 1) { // LISTAR PRODUTOS
+				g.listarProdutos(listaProdutos); // LISTA PRODUTOS
 			}
 
-			else if (menu == 2) {
+			else if (menu == 2) { // ADICIONAR NOVO PRODUTO
+
 				System.out.println("Digite o produto: ");
 				String produto = sc.next();
+
 				System.out.println("Digite o codigo do produto");
 				int codigo = sc.nextInt();
 				sc.nextLine();
 
-				for (Produto produto5 : listaProdutos) { // TRATAMENTO CODIGO REPETIDO
-					while (produto5.getCodProduto() == codigo) {
+				for (Produto produto5 : listaProdutos) {
+
+					while (produto5.getCodProduto() == codigo) { // TRATAMENTO CODIGO REPETIDO (USADO APENAS 1 VEZ EM
+																	// TODO CODIGO)
 						System.out.println("Codigo de produto ja existe tente novamente:");
 						codigo = sc.nextInt();
 						sc.nextLine();
 					}
 				}
 
-				System.out.println("Deseja adicionar estoque(y/n)");
+				System.out.println("Deseja adicionar estoque(y/n)"); // OPÇÃO DE ADICIONAR ESTOQUE
 				String choice = sc.nextLine();
 
 				if (choice.equals("y")) {
-
 					int quantidade = -1;
-					System.out.println("Digite a quantidade do produto");
 
-					while (quantidade < 0) {
-						quantidade = sc.nextInt();
-						if (quantidade < 0) {
-							System.out.println("Quantidade negativa, tente novamente com um numero positvo.");
-						}
-					}
+					System.out.println("Digite a quantidade do produto"); // TRATAMENTO PARA OBETER NUMERO POSITIVO (+)
+					quantidade = g.obeterNumeroPositivo(sc, 0);
+
 					Produto novoProduto = new Produto(produto, codigo, quantidade);
 					listaProdutos.add(novoProduto);
+
 				} else {
 					Produto novoProduto = new Produto(produto, codigo, 0);
 					listaProdutos.add(novoProduto);
 				}
-
 			}
 
 			else if (menu == 3) { // EDITAR ESTOQUE
 
-				if (g.listaProdutosVazia(listaProdutos)) {
+				if (g.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
 				} else {
 
-					g.listarProdutos(listaProdutos);
+					g.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
+
+					int cod = g.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBETER CODIGO EXISTENTE
+																				// NA LISTA
 
 					System.out.println("Digite o código do produto:");
-					int cod = g.obterCodigoProdutoValido(listaProdutos, sc);
-
 					for (Produto produto : listaProdutos) {
-
 						if (produto.getCodProduto() == cod) {
-							int newQuant = -1;
 
+							int newQuant = -1;
 							System.out.println("Digite a quantidade a ser adicionada/removida do sistema:");
 
 							while (newQuant < 0) { // LOOP PARA CASO newQuant VENHA SER (-) NEGATIVO
@@ -113,30 +112,29 @@ public class Main {
 				}
 			} else if (menu == 4) { // REMOVER PRODUTO
 
-				if (g.listaProdutosVazia(listaProdutos)) {
+				if (g.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
 				} else {
 
-					g.listarProdutos(listaProdutos);
+					g.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
 
 					System.out.println("Digite o codiogo do produto a ser removido:");
-					int codigoRemover = g.obterCodigoProdutoValido(listaProdutos, sc);
-
+					int codigoRemover = g.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBETER CODIGO
+																						// EXISTENTE NA LISTA
 					sc.nextLine();
 
-					for (Produto produto : listaProdutos) {
+					for (Produto produto : listaProdutos) { // CONFIRMAÇAO PARA DELETAR CODIGO
 						if (produto.getCodProduto() == codigoRemover) {
-
 							String produtoPrint = produto.getNomeProduto();
 							System.out.println("Tem certeza que deseja excluir " + produtoPrint + "do sistema? ");
 							String choice = sc.nextLine();
 
-							if (choice.equals("y")) {
+							if (choice.equals("y")) { // REMOÇAO DO PRODUTO
 								if (produto.getCodProduto() == codigoRemover) {
-									listaProdutos.remove(produto); // Remove o produto da lista
+									listaProdutos.remove(produto);
 									System.out.println(produtoPrint + " foi removido do sistema com sucesso.");
-
 								}
 								break;
+
 							} else {
 								System.out.println("Operação cancelada.");
 							}
@@ -145,14 +143,14 @@ public class Main {
 				}
 			}
 
-			else if (menu == 5) { // VENDER ESTOQUE
+			else if (menu == 5) { // VENDER ESTOQUE //CONSERTA CASO ESTOQUE SEJA 0 // TRATAMENTO PARA ENTRADA
 
 				if (g.listaProdutosVazia(listaProdutos)) {
 				} else {
 
 					g.listarProdutos(listaProdutos);
 
-					System.out.println("Digite o código do produto:");
+					System.out.println("Digite o código do produto a ser vendido:");
 					int cod = g.obterCodigoProdutoValido(listaProdutos, sc);
 
 					for (Produto produto : listaProdutos) {
@@ -184,6 +182,13 @@ public class Main {
 
 					}
 				}
+			} else if (menu == 7) {
+				System.out.println("digite:");
+				int cod = 0;
+				int newcode = g.obeterNumeroPositivo(sc, 0);
+				cod = newcode;
+				System.out.println(cod);
+
 			}
 		}
 

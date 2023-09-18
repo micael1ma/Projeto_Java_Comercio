@@ -36,7 +36,6 @@ public class Gerenciador {
 	public int obterCodigoProdutoValido(ArrayList<Produto> listaProdutos, Scanner sc) {
 		int cod = -1;
 
-		
 		while (true) {
 
 			cod = sc.nextInt();
@@ -56,8 +55,28 @@ public class Gerenciador {
 				System.out.println("Produto não encontrado, tente novamente:");
 			}
 		}
-
 		return cod;
+	}
+
+	public int obeterNumeroPositivo(Scanner sc, int x) {
+
+		int quantidade = -1;
+
+		while (true) {
+
+			quantidade = sc.nextInt();
+
+			boolean produtoEncontrado = false;
+
+			if (quantidade >= x) {
+				produtoEncontrado = true;
+				break;
+
+			} else {
+				System.out.println("Quantidade negativo tente novamente:");
+			}
+		}
+		return quantidade;
 	}
 
 }

@@ -1,0 +1,40 @@
+Menu
+
+1 listar produtos
+
+- Tratamento caso lista esteja vazia
+
+
+2 cadastrar produtos 
+
+- Elementos
+	-Primary key
+	-Nome produto
+	-Estoque
+	-Valor de venda
+	-Valor de compra
+
+- Tramento caso primary key se repita
+
+
+3 editar produto
+
+- Elementos
+	-Primary key
+	-Nome produto
+	-Estoque
+	-Valor de venda
+	-Valor de compra
+
+4 vender produto
+
+-Tratamento caso não haja estoque do produto selecionado
+-Tramento caso itens vendidos exceda a quantidade disponivel
+-Vender mais de um produto ao mesmo tempo
+
+5 analise de vendas
+
+-Lucro bruto
+-Lucro liquido
+-Margem de lucro 
+
