@@ -1,21 +1,23 @@
 package management;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import entities.Produto;
 
 public class Gerenciador {
 
-//	1	Listar 		ok
-//	2	Cadastrar 	ok (organizar)
+//	1	Listar 		ok (listar apenas os produtos de uma determinada categoria)
+//	2	Cadastrar 	ok (o código NÃO PRECISA mais ser solicitado, e pode ser feito de forma sequencial)
 //	3	Adicionar	ok 
 //	4	Remover		ok 
-//	5	Vender		ok (editar comecio)
-//	6	Relatório	   (poo)
-//	7	Sair 		ok
+//	5	Vender		ok 
+//	6	Relatório	gerar um breve relatório do que foi comprado, o que foi
+//	vendido e o saldo arrecadado. bônus: o sistema deve gerar um relatório para a sessão atual
+//	e outro para o histórico completo
+//	7	Sair 		ok  
 
-	public void listarProdutos(ArrayList<Produto> listaProdutos) {
+	public void listarProdutos(List<Produto> listaProdutos) {
 		System.out.println("Lista de produtos cadastrados.");
 		System.out.println();
 
@@ -34,7 +36,7 @@ public class Gerenciador {
 		}
 	}
 
-	public boolean listaProdutosVazia(ArrayList<Produto> listaProdutos) {
+	public boolean listaProdutosVazia(List<Produto> listaProdutos) {
 		if (listaProdutos.isEmpty()) {
 			System.out.println("Não há produtos cadastrados no sistema.");
 			return true;
@@ -42,7 +44,7 @@ public class Gerenciador {
 		return false;
 	}
 
-	public int obterCodigoProdutoValido(ArrayList<Produto> listaProdutos, Scanner sc) {
+	public int obterCodigoProdutoValido(List<Produto> listaProdutos, Scanner sc) {
 		int cod = -1;
 
 		while (true) {

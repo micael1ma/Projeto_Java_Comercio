@@ -1,28 +1,39 @@
 package Apllication;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-import entities.Produto;
+import entities.*;
+
 import management.Gerenciador;
-import txt.Saldo;
+import txt.*;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		ArrayList<Produto> listaProdutos = new ArrayList<>();
+		String caminhoArquivoSaldo = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\SALDO.txt";
+		String caminhoArquivoProduto = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\PRODUTO.txt";
 
 		Scanner sc = new Scanner(System.in);
 		Gerenciador G = new Gerenciador();
 		Saldo Saldo = new Saldo();
-
-		String caminhoArquivoSaldo = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\SALDO.txt";
-		int menu = 0;
+		ProdutoManeger PM = new ProdutoManeger();
+		Venda Venda = new Venda();
+		Compra Compra = new Compra();
 
 		float saldo = Saldo.puxar(caminhoArquivoSaldo);
-		System.out.println(saldo);
 
+		float saldoComprado = 0;
+		float saldoVendido = 0;
+
+		List<Produto> listaProdutos = PM.carregarProdutos(caminhoArquivoProduto);
+
+		List<Compra> listaProdutosComprado = new ArrayList<>();
+		List<Venda> listaProdutosVendido = new ArrayList<>();
+
+		int menu = 0;
 		while (menu != 7) {
 			System.out.println("_____________________________________________");
 			System.out.println("Bem vindo ao menu");
@@ -45,6 +56,9 @@ public class Main {
 
 			else if (menu == 2) { // ADICIONAR NOVO PRODUTO
 
+				System.out.println("Digite o codigo do produto");
+				int codigo = sc.nextInt();
+
 				System.out.println("Digite o produto: ");
 				String produto = sc.next();
 
@@ -56,9 +70,6 @@ public class Main {
 
 				System.out.println("Digite valor de venda do produto: ");
 				float valorDeVenda = sc.nextFloat();
-
-				System.out.println("Digite o codigo do produto");
-				int codigo = sc.nextInt();
 				sc.nextLine();
 
 				for (Produto produto5 : listaProdutos) {
@@ -72,20 +83,23 @@ public class Main {
 
 				System.out.println("Deseja adicionar estoque(y/n)"); // OPÇÃO DE ADICIONAR ESTOQUE
 				String choice = sc.nextLine();
-
+				int quantidade = 0;
 				if (choice.equals("y")) {
-					int quantidade = -1;
 
 					System.out.println("Digite a quantidade do produto"); // TRATAMENTO PARA OBETER NUMERO POSITIVO (+)
 					quantidade = G.obeterNumeroPositivo(sc, 0);
 
-					Produto novoProduto = new Produto(produto, codigo, quantidade, categoria, custoDeCompra,
-							valorDeVenda);
+					Produto novoProduto = new Produto(codigo, produto, categoria, custoDeCompra, valorDeVenda,
+							quantidade);
 					listaProdutos.add(novoProduto);
+					System.out.println(
+							produto + " cadastrado com sucesso. Código: " + codigo + ", Estoque: " + quantidade + ".");
 
 				} else {
-					Produto novoProduto = new Produto(produto, codigo, 0, categoria, custoDeCompra, valorDeVenda);
+					Produto novoProduto = new Produto(codigo, produto, categoria, custoDeCompra, valorDeVenda,
+							quantidade);
 					listaProdutos.add(novoProduto);
+					System.out.println(produto + " cadastrado com sucesso. Código: " + codigo + ", Estoque: 0");
 				}
 			}
 
@@ -109,15 +123,21 @@ public class Main {
 							int oldQuant = produto.getQuantProduto(); // ACESSAR QUANTIDADE EXISTENTE
 							int newQuant = oldQuant + addQuant; // SOMAR QUANTIDADE EXISTENTE E QUANTIDADE FORNECIDA
 
-							float valorDaCompra = produto.getCustoDeCompra() * addQuant;
-							float saldoCheck = saldo - valorDaCompra;
+							float valorTotalDaCompra = produto.getCustoDeCompra() * addQuant;
+							float saldoCheck = saldo - valorTotalDaCompra;
 
 							if (saldoCheck >= 0) {
-								saldo = saldo - valorDaCompra;
+
 								String nameP = produto.getNomeProduto(); // BLOCO PARA ATUALIZAR A QUANTIDADE
 								System.out.println("Unidades de " + nameP + " foi atualizado de " + oldQuant + " para "
 										+ newQuant);
 								produto.setQuantProduto(newQuant);
+
+								saldoComprado = saldoComprado + valorTotalDaCompra;
+								saldo = saldo - valorTotalDaCompra;
+
+								Compra NovaCompra = new Compra(cod, nameP, addQuant, valorTotalDaCompra);
+								listaProdutosComprado.add(NovaCompra);
 
 								break;
 							} else {
@@ -185,7 +205,7 @@ public class Main {
 							System.out.println("Digite a quantidade a de produtos:");
 
 							while (newQuant < 0) { // LOOP PARA CASO newQuant VENHA SER (-) NEGATIVO
-								int addQuant = sc.nextInt();
+								int addQuant = G.obeterNumeroPositivo(sc, 1);
 
 								int oldQuant = produto.getQuantProduto(); // ACESSAR QUANTIDADE EXISTENTE
 								newQuant = oldQuant - addQuant; // SOMAR QUANTIDADE EXISTENTE E QUANTIDADE FORNECIDA
@@ -199,6 +219,15 @@ public class Main {
 											+ " para " + newQuant);
 									produto.setQuantProduto(newQuant);
 
+									float ValordeVenda = produto.getValorDeVenda();
+									float ValorTotalDeVendaTotal = addQuant * ValordeVenda;
+
+									saldoVendido = saldoVendido + ValorTotalDeVendaTotal;
+									saldo = saldo + ValorTotalDeVendaTotal;
+
+									Venda novaVenda = new Venda(cod, nameP, addQuant, ValorTotalDeVendaTotal);
+									listaProdutosVendido.add(novaVenda);
+
 								}
 							}
 							break;
@@ -208,11 +237,24 @@ public class Main {
 				}
 			} else if (menu == 6) {
 
-				System.out.println(saldo);
+				System.out.println("           Relatorio da sessão");
+				System.out.println("_____________________________________________");
+				System.out.println("");
+				System.out.println("Saldo R$: " + saldo);
+				System.out.println("Saldo arrecadado R$:" + saldoVendido);
+				System.out.println("Saldo gasto R$:" + saldoComprado);
+				System.out.println("_____________________________________________");
+				System.out.println("           Relatorio de vendas");
+				System.out.println("");
+				Venda.listarProdutosVendidos(listaProdutosVendido);
+				System.out.println("_____________________________________________");
+				System.out.println("           Relatorio de compras");
+				System.out.println("");
+				Compra.listarProdutosComprados(listaProdutosComprado);
 
 			}
 		}
-
+		PM.salvarProdutos(listaProdutos, caminhoArquivoProduto);
 		Saldo.salvar(saldo, caminhoArquivoSaldo);
 		sc.close();
 
