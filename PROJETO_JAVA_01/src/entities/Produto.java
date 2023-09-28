@@ -9,6 +9,13 @@ public class Produto {
 	private float valorDeVenda;
 	private int quantProduto;
 
+	public Produto() {
+	}
+
+	public void setQuantProduto(int quantProduto) {
+		this.quantProduto = quantProduto;
+	}
+
 	public Produto(int codProduto, String nomeProduto, String categoria, float custoDeCompra, float valorDeVenda,
 			int quantProduto) {
 		super();
@@ -19,21 +26,40 @@ public class Produto {
 		this.valorDeVenda = valorDeVenda;
 		this.quantProduto = quantProduto;
 	}
-	
-	public Produto(int codProduto, String nomeProduto, String categoria, float custoDeCompra, float valorDeVenda) {		
+
+	public Produto(int codProduto, String nomeProduto, String categoria, float custoDeCompra, float valorDeVenda) {
 		this.codProduto = codProduto;
 		this.nomeProduto = nomeProduto;
 		this.categoria = categoria;
 		this.custoDeCompra = custoDeCompra;
 		this.valorDeVenda = valorDeVenda;
-		
-	}
-	
-	
-	public Produto() {
+
 	}
 
-	// Método para converter o produto em uma representação de string
+	public String getNomeProduto() {
+		return nomeProduto;
+	}
+
+	public int getCodProduto() {
+		return codProduto;
+	}
+
+	public int getQuantProduto() {
+		return quantProduto;
+	}
+
+	public String getCategoria() {
+		return categoria;
+	}
+
+	public float getCustoDeCompra() {
+		return custoDeCompra;
+	}
+
+	public float getValorDeVenda() {
+		return valorDeVenda;
+	}
+
 	public String toFileString() {
 		return codProduto + "," + nomeProduto + "," + categoria + "," + custoDeCompra + "," + valorDeVenda + ","
 				+ quantProduto;
@@ -51,54 +77,6 @@ public class Produto {
 		int quantProduto = Integer.parseInt(partes[5]);
 
 		return new Produto(codProduto, nomeProduto, categoria, custoDeCompra, valorDeVenda, quantProduto);
-	}
-
-	public String getNomeProduto() {
-		return nomeProduto;
-	}
-
-	public void setNomeProduto(String nomeProduto) {
-		this.nomeProduto = nomeProduto;
-	}
-
-	public int getCodProduto() {
-		return codProduto;
-	}
-
-	public void setCodProduto(int codProduto) {
-		this.codProduto = codProduto;
-	}
-
-	public int getQuantProduto() {
-		return quantProduto;
-	}
-
-	public void setQuantProduto(int quantProduto) {
-		this.quantProduto = quantProduto;
-	}
-
-	public String getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
-
-	public float getCustoDeCompra() {
-		return custoDeCompra;
-	}
-
-	public void setCustoDeCompra(float custoDeCompra) {
-		this.custoDeCompra = custoDeCompra;
-	}
-
-	public float getValorDeVenda() {
-		return valorDeVenda;
-	}
-
-	public void setValorDeVenda(float valorDeVenda) {
-		this.valorDeVenda = valorDeVenda;
 	}
 
 }

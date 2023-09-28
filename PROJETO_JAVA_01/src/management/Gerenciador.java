@@ -12,8 +12,7 @@ public class Gerenciador {
 //	3	Adicionar	ok 
 //	4	Remover		ok 
 //	5	Vender		ok 
-//	6	Relatório	gerar um breve relatório do que foi comprado, o que foi
-//	vendido e o saldo arrecadado. bônus: o sistema deve gerar um relatório para a sessão atual
+//	6	Relatório	ok bônus: o sistema deve gerar um relatório para a sessão atual
 //	e outro para o histórico completo
 //	7	Sair 		ok  
 

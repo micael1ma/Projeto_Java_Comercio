@@ -13,25 +13,32 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		String caminhoArquivoSaldo = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\SALDO.txt";
 		String caminhoArquivoProduto = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\PRODUTO.txt";
+		String caminhoArquivoSaldo = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\SALDO.txt";
+		String caminhoArquivoCompra = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\COMPRA.txt";
+		String caminhoArquivoVenda = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\VENDA.txt";
 
 		Scanner sc = new Scanner(System.in);
-		Gerenciador G = new Gerenciador();
-		Saldo Saldo = new Saldo();
+
 		ProdutoManeger PM = new ProdutoManeger();
+		Gerenciador Gerenciador = new Gerenciador();
+
+		Saldo Saldo = new Saldo();
 		Venda Venda = new Venda();
 		Compra Compra = new Compra();
 
 		float saldo = Saldo.puxar(caminhoArquivoSaldo);
 
-		float saldoComprado = 0;
-		float saldoVendido = 0;
+		float saldoSessaoComprado = 0;
+		float saldoSessaoVendido = 0;
 
 		List<Produto> listaProdutos = PM.carregarProdutos(caminhoArquivoProduto);
 
-		List<Compra> listaProdutosComprado = new ArrayList<>();
-		List<Venda> listaProdutosVendido = new ArrayList<>();
+		List<Venda> listaTodosProdutosVendidos = Venda.carregarProdutosVendidos(caminhoArquivoVenda);
+		List<Venda> listaProdutosVendidoSessao = new ArrayList<>();
+
+		List<Compra> listaTodosProdutosComprados = Compra.carregarProdutosComprados(caminhoArquivoCompra);
+		List<Compra> listaProdutosCompradoSessao = new ArrayList<>();
 
 		int menu = 0;
 		while (menu != 7) {
@@ -51,7 +58,7 @@ public class Main {
 			menu = sc.nextInt();
 
 			if (menu == 1) { // LISTAR PRODUTOS
-				G.listarProdutos(listaProdutos); // LISTA PRODUTOS
+				Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS
 			}
 
 			else if (menu == 2) { // ADICIONAR NOVO PRODUTO
@@ -87,7 +94,7 @@ public class Main {
 				if (choice.equals("y")) {
 
 					System.out.println("Digite a quantidade do produto"); // TRATAMENTO PARA OBETER NUMERO POSITIVO (+)
-					quantidade = G.obeterNumeroPositivo(sc, 0);
+					quantidade = Gerenciador.obeterNumeroPositivo(sc, 0);
 
 					Produto novoProduto = new Produto(codigo, produto, categoria, custoDeCompra, valorDeVenda,
 							quantidade);
@@ -105,21 +112,22 @@ public class Main {
 
 			else if (menu == 3) { // ADICIONAR ESTOQUE
 
-				if (G.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
+				if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
 				} else {
 
-					G.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
+					Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
 
 					System.out.println();
 					System.out.println("Digite o código do produto:");
-					int cod = G.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBETER CODIGO EXISTENTE
-																				// NA LISTA
+					int cod = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBETER CODIGO
+																						// EXISTENTE
+					// NA LISTA
 					for (Produto produto : listaProdutos) {
 						if (produto.getCodProduto() == cod) {
 
 							System.out.println("Digite a quantidade a ser adicionada do sistema:");
 
-							int addQuant = G.obeterNumeroPositivo(sc, 1); // OBTER NUMERO VALIDO
+							int addQuant = Gerenciador.obeterNumeroPositivo(sc, 1); // OBTER NUMERO VALIDO
 							int oldQuant = produto.getQuantProduto(); // ACESSAR QUANTIDADE EXISTENTE
 							int newQuant = oldQuant + addQuant; // SOMAR QUANTIDADE EXISTENTE E QUANTIDADE FORNECIDA
 
@@ -133,11 +141,12 @@ public class Main {
 										+ newQuant);
 								produto.setQuantProduto(newQuant);
 
-								saldoComprado = saldoComprado + valorTotalDaCompra;
+								saldoSessaoComprado = saldoSessaoComprado + valorTotalDaCompra;
 								saldo = saldo - valorTotalDaCompra;
 
 								Compra NovaCompra = new Compra(cod, nameP, addQuant, valorTotalDaCompra);
-								listaProdutosComprado.add(NovaCompra);
+								listaProdutosCompradoSessao.add(NovaCompra);
+								listaTodosProdutosComprados.add(NovaCompra);
 
 								break;
 							} else {
@@ -150,13 +159,14 @@ public class Main {
 
 			} else if (menu == 4) { // REMOVER PRODUTO
 
-				if (G.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
+				if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
 				} else {
 
-					G.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
+					Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
 
 					System.out.println("Digite o codiogo do produto a ser removido:");
-					int codigoRemover = G.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBTER CODIGO V
+					int codigoRemover = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA
+																									// OBTER CODIGO V
 					sc.nextLine();
 
 					for (Produto produto : listaProdutos) { // CONFIRMAÇAO PARA DELETAR CODIGO
@@ -189,13 +199,13 @@ public class Main {
 
 			else if (menu == 5) { // VENDER ESTOQUE //CONSERTA CASO ESTOQUE SEJA 0 // TRATAMENTO PARA ENTRADA
 
-				if (G.listaProdutosVazia(listaProdutos)) {
+				if (Gerenciador.listaProdutosVazia(listaProdutos)) {
 				} else {
 
-					G.listarProdutos(listaProdutos);
+					Gerenciador.listarProdutos(listaProdutos);
 
 					System.out.println("Digite o código do produto a ser vendido:");
-					int cod = G.obterCodigoProdutoValido(listaProdutos, sc);
+					int cod = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc);
 
 					for (Produto produto : listaProdutos) {
 
@@ -205,7 +215,7 @@ public class Main {
 							System.out.println("Digite a quantidade a de produtos:");
 
 							while (newQuant < 0) { // LOOP PARA CASO newQuant VENHA SER (-) NEGATIVO
-								int addQuant = G.obeterNumeroPositivo(sc, 1);
+								int addQuant = Gerenciador.obeterNumeroPositivo(sc, 1);
 
 								int oldQuant = produto.getQuantProduto(); // ACESSAR QUANTIDADE EXISTENTE
 								newQuant = oldQuant - addQuant; // SOMAR QUANTIDADE EXISTENTE E QUANTIDADE FORNECIDA
@@ -222,11 +232,12 @@ public class Main {
 									float ValordeVenda = produto.getValorDeVenda();
 									float ValorTotalDeVendaTotal = addQuant * ValordeVenda;
 
-									saldoVendido = saldoVendido + ValorTotalDeVendaTotal;
+									saldoSessaoVendido = saldoSessaoVendido + ValorTotalDeVendaTotal;
 									saldo = saldo + ValorTotalDeVendaTotal;
 
 									Venda novaVenda = new Venda(cod, nameP, addQuant, ValorTotalDeVendaTotal);
-									listaProdutosVendido.add(novaVenda);
+									listaProdutosVendidoSessao.add(novaVenda);
+									listaTodosProdutosVendidos.add(novaVenda);
 
 								}
 							}
@@ -236,24 +247,51 @@ public class Main {
 					}
 				}
 			} else if (menu == 6) {
+				int opcao = 0;
+				System.out.println("1) Relatorio da sessão");
+				System.out.println("2) Relatorio completo");
+				System.out.println("");
+				System.out.println("Digite a opção desejada:");
+				opcao = sc.nextInt();
 
-				System.out.println("           Relatorio da sessão");
-				System.out.println("_____________________________________________");
-				System.out.println("");
-				System.out.println("Saldo R$: " + saldo);
-				System.out.println("Saldo arrecadado R$:" + saldoVendido);
-				System.out.println("Saldo gasto R$:" + saldoComprado);
-				System.out.println("_____________________________________________");
-				System.out.println("           Relatorio de vendas");
-				System.out.println("");
-				Venda.listarProdutosVendidos(listaProdutosVendido);
-				System.out.println("_____________________________________________");
-				System.out.println("           Relatorio de compras");
-				System.out.println("");
-				Compra.listarProdutosComprados(listaProdutosComprado);
+				if (opcao == 1) {
+					System.out.println("           Relatorio da sessão");
+					System.out.println("_____________________________________________");
+					System.out.println("");
+					System.out.println("Saldo R$: " + saldo);
+					System.out.println("Saldo arrecadado R$:" + saldoSessaoVendido);
+					System.out.println("Saldo gasto R$:" + saldoSessaoComprado);
+					System.out.println("_____________________________________________");
+					System.out.println("           Relatorio de vendas");
+					System.out.println("");
+					Venda.listarProdutosVendidos(listaProdutosVendidoSessao);
+					System.out.println("_____________________________________________");
+					System.out.println("           Relatorio de compras");
+					System.out.println("");
+					Compra.listarProdutosComprados(listaProdutosCompradoSessao);
 
+				} else if (opcao == 2) {
+					System.out.println("           Relatorio da sessão");
+					System.out.println("_____________________________________________");
+					System.out.println("");
+					System.out.println("Saldo R$: " + saldo);
+					System.out.println("Saldo arrecadado R$:" + saldoSessaoVendido);
+					System.out.println("Saldo gasto R$:" + saldoSessaoComprado);
+					System.out.println("_____________________________________________");
+					System.out.println("           Relatorio de vendas");
+					System.out.println("");
+					Venda.listarProdutosVendidos(listaTodosProdutosVendidos);
+					System.out.println("_____________________________________________");
+					System.out.println("           Relatorio de compras");
+					System.out.println("");
+					Compra.listarProdutosComprados(listaTodosProdutosComprados);
+
+				}
 			}
 		}
+		Compra.salvarProdutosComprados(listaTodosProdutosComprados, caminhoArquivoCompra);
+		Venda.salvarProdutosVendidos(listaTodosProdutosVendidos, caminhoArquivoVenda);
+
 		PM.salvarProdutos(listaProdutos, caminhoArquivoProduto);
 		Saldo.salvar(saldo, caminhoArquivoSaldo);
 		sc.close();
