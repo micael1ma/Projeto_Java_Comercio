@@ -68,7 +68,7 @@ public class Venda extends Produto {
 			}
 
 			bufferedWriter.close();
-			System.out.println("Produtos salvos com sucesso!");
+		
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -103,7 +103,7 @@ public class Venda extends Produto {
 			}
 
 			bufferedReader.close();
-			System.out.println("Produtos carregados com sucesso!");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

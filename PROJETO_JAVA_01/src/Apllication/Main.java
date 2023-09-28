@@ -1,38 +1,39 @@
 package Apllication;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import entities.*;
-
+import entities.Compra;
+import entities.Produto;
+import entities.Saldo;
+import entities.Venda;
 import management.Gerenciador;
-import txt.*;
+
 
 public class Main {
 
 	public static void main(String[] args) {
+
+		Scanner sc = new Scanner(System.in);
+
+		Gerenciador Gerenciador = new Gerenciador();
+		Produto Produto = new Produto();
+		Saldo Saldo = new Saldo();
+		Venda Venda = new Venda();
+		Compra Compra = new Compra();
 
 		String caminhoArquivoProduto = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\PRODUTO.txt";
 		String caminhoArquivoSaldo = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\SALDO.txt";
 		String caminhoArquivoCompra = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\COMPRA.txt";
 		String caminhoArquivoVenda = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\VENDA.txt";
 
-		Scanner sc = new Scanner(System.in);
-
-		ProdutoManeger PM = new ProdutoManeger();
-		Gerenciador Gerenciador = new Gerenciador();
-
-		Saldo Saldo = new Saldo();
-		Venda Venda = new Venda();
-		Compra Compra = new Compra();
-
 		float saldo = Saldo.puxar(caminhoArquivoSaldo);
-
 		float saldoSessaoComprado = 0;
 		float saldoSessaoVendido = 0;
 
-		List<Produto> listaProdutos = PM.carregarProdutos(caminhoArquivoProduto);
+		List<Produto> listaProdutos = Produto.carregarProdutos(caminhoArquivoProduto);
 
 		List<Venda> listaTodosProdutosVendidos = Venda.carregarProdutosVendidos(caminhoArquivoVenda);
 		List<Venda> listaProdutosVendidoSessao = new ArrayList<>();
@@ -158,43 +159,34 @@ public class Main {
 				}
 
 			} else if (menu == 4) { // REMOVER PRODUTO
+			    if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
+			    } else {
+			        Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
+			        System.out.println("Digite o código do produto a ser removido:");
+			        int codigoRemover = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBTER CÓDIGO V
+			        sc.nextLine();
 
-				if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
-				} else {
-
-					Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
-
-					System.out.println("Digite o codiogo do produto a ser removido:");
-					int codigoRemover = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA
-																									// OBTER CODIGO V
-					sc.nextLine();
-
-					for (Produto produto : listaProdutos) { // CONFIRMAÇAO PARA DELETAR CODIGO
-						if (produto.getCodProduto() == codigoRemover) {
-
-							String produtoNome = produto.getNomeProduto(); // OBTER NOME DO PRODUTO
-
-							if (produto.getQuantProduto() > 0) { // CHECAR SE A ESTOQUE
-								System.out.println(
-										"Tem certeza que deseja excluir " + produtoNome + " do sistema? (y/n) ");
-								String choice = sc.nextLine();
-
-								if (choice.equals("y")) { // REMOVER CASO HAJA ESTOQUE
-									listaProdutos.remove(produto);
-									System.out.println(produtoNome + " foi removido do sistema com sucesso.");
-
-								} else {
-									System.out.println("Operação cancelada.");
-								}
-							} else {
-								listaProdutos.remove(produto); // REMOVER CASO NAO HAJA ESTOQUE
-								System.out.println(produtoNome + " foi removido do sistema com sucesso.");
-
-							}
-						}
-
-					}
-				}
+			        Iterator<Produto> iterator = listaProdutos.iterator(); // NAO TENHO MINIMA IDEAI DO QUE E ISSO
+			        while (iterator.hasNext()) {
+			            Produto produto = iterator.next();
+			            if (produto.getCodProduto() == codigoRemover) {
+			                String produtoNome = produto.getNomeProduto();
+			                if (produto.getQuantProduto() > 0) { // CHECAR SE HÁ ESTOQUE
+			                    System.out.println("Tem certeza que deseja excluir " + produtoNome + " do sistema? (y/n) ");
+			                    String choice = sc.nextLine();
+			                    if (choice.equals("y")) {
+			                        iterator.remove(); // Remover o produto usando o iterador
+			                        System.out.println(produtoNome + " foi removido do sistema com sucesso.");
+			                    } else {
+			                        System.out.println("Operação cancelada.");
+			                    }
+			                } else {
+			                    iterator.remove(); // Remover o produto usando o iterador
+			                    System.out.println(produtoNome + " foi removido do sistema com sucesso.");
+			                }
+			            }
+			        }
+			    }
 			}
 
 			else if (menu == 5) { // VENDER ESTOQUE //CONSERTA CASO ESTOQUE SEJA 0 // TRATAMENTO PARA ENTRADA
@@ -255,44 +247,43 @@ public class Main {
 				opcao = sc.nextInt();
 
 				if (opcao == 1) {
-					System.out.println("           Relatorio da sessão");
+					System.out.println("           Historico da sessão");
 					System.out.println("_____________________________________________");
 					System.out.println("");
 					System.out.println("Saldo R$: " + saldo);
 					System.out.println("Saldo arrecadado R$:" + saldoSessaoVendido);
 					System.out.println("Saldo gasto R$:" + saldoSessaoComprado);
 					System.out.println("_____________________________________________");
-					System.out.println("           Relatorio de vendas");
+					System.out.println("           Historico de vendas");
 					System.out.println("");
 					Venda.listarProdutosVendidos(listaProdutosVendidoSessao);
 					System.out.println("_____________________________________________");
-					System.out.println("           Relatorio de compras");
+					System.out.println("           Historico de compras");
 					System.out.println("");
 					Compra.listarProdutosComprados(listaProdutosCompradoSessao);
 
 				} else if (opcao == 2) {
-					System.out.println("           Relatorio da sessão");
+					System.out.println("           Historico Completo");
 					System.out.println("_____________________________________________");
 					System.out.println("");
 					System.out.println("Saldo R$: " + saldo);
 					System.out.println("Saldo arrecadado R$:" + saldoSessaoVendido);
 					System.out.println("Saldo gasto R$:" + saldoSessaoComprado);
 					System.out.println("_____________________________________________");
-					System.out.println("           Relatorio de vendas");
+					System.out.println("           Historico de vendas");
 					System.out.println("");
 					Venda.listarProdutosVendidos(listaTodosProdutosVendidos);
 					System.out.println("_____________________________________________");
-					System.out.println("           Relatorio de compras");
+					System.out.println("           Historico de compras");
 					System.out.println("");
 					Compra.listarProdutosComprados(listaTodosProdutosComprados);
 
 				}
 			}
 		}
+		Produto.salvarProdutos(listaProdutos, caminhoArquivoProduto);
 		Compra.salvarProdutosComprados(listaTodosProdutosComprados, caminhoArquivoCompra);
-		Venda.salvarProdutosVendidos(listaTodosProdutosVendidos, caminhoArquivoVenda);
-
-		PM.salvarProdutos(listaProdutos, caminhoArquivoProduto);
+		Venda.salvarProdutosVendidos(listaTodosProdutosVendidos, caminhoArquivoVenda);		
 		Saldo.salvar(saldo, caminhoArquivoSaldo);
 		sc.close();
 

@@ -1,4 +1,4 @@
-package txt;
+package entities;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,6 +7,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Saldo {
+
+	private float saldoTotal;
+	private float vendaTotal;;
+	private float compraTotal;;
+
+	public Saldo(float saldoTotal, float vendaTotal, float compraTotal) {
+		super();
+		this.saldoTotal = saldoTotal;
+		this.vendaTotal = vendaTotal;
+		this.compraTotal = compraTotal;
+
+	}
 
 	public void salvar(float saldo, String caminhoArquivoSaldo) {
 

@@ -12,8 +12,7 @@ public class Gerenciador {
 //	3	Adicionar	ok 
 //	4	Remover		ok 
 //	5	Vender		ok 
-//	6	Relatório	ok bônus: o sistema deve gerar um relatório para a sessão atual
-//	e outro para o histórico completo
+//	6	Relatório	ok 
 //	7	Sair 		ok  
 
 	public void listarProdutos(List<Produto> listaProdutos) {
