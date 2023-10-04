@@ -20,10 +20,6 @@ public class Produto {
 	public Produto() {
 	}
 
-	public void setQuantProduto(int quantProduto) {
-		this.quantProduto = quantProduto;
-	}
-
 	public Produto(int codProduto, String nomeProduto, String categoria, float custoDeCompra, float valorDeVenda,
 			int quantProduto) {
 		super();
@@ -54,6 +50,10 @@ public class Produto {
 
 	public int getQuantProduto() {
 		return quantProduto;
+	}
+
+	public void setQuantProduto(int quantProduto) {
+		this.quantProduto = quantProduto;
 	}
 
 	public String getCategoria() {

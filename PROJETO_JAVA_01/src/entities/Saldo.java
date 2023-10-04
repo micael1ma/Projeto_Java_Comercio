@@ -5,12 +5,18 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Saldo {
 
 	private float saldoTotal;
 	private float vendaTotal;;
 	private float compraTotal;;
+
+	public Saldo() {
+
+	}
 
 	public Saldo(float saldoTotal, float vendaTotal, float compraTotal) {
 		super();
@@ -20,52 +26,75 @@ public class Saldo {
 
 	}
 
-	public void salvar(float saldo, String caminhoArquivoSaldo) {
+	public float getSaldoTotal() {
+		return saldoTotal;
+	}
 
+	public float getVendaTotal() {
+		return vendaTotal;
+	}
+
+	public float getCompraTotal() {
+		return compraTotal;
+	}
+
+	public String toFileStringSaldo() {
+		return saldoTotal + "," + vendaTotal + "," + compraTotal;
+	}
+
+	public void salvarSaldo(List<Saldo> listaSaldo, String caminhoArquivoSaldo) {
 		try {
-			// Cria um objeto FileWriter para escrever no arquivo
-			FileWriter fileWriter = new FileWriter(caminhoArquivoSaldo);
 
-			// Cria um objeto BufferedWriter para escrever os dados de forma mais eficiente
+			FileWriter fileWriter = new FileWriter(caminhoArquivoSaldo);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-			// Escreve o valor do saldo no arquivo
-			bufferedWriter.write(Float.toString(saldo));
+			for (Saldo Valor : listaSaldo) {
+				bufferedWriter.write(Valor.toFileStringSaldo());
+				bufferedWriter.newLine();
+			}
 
-			// Fecha o BufferedWriter
 			bufferedWriter.close();
 
-			System.out.println("Saldo salvo com sucesso!");
 		} catch (IOException e) {
 			e.printStackTrace();
-
 		}
 	}
 
-	public float puxar(String caminhoArquivoSaldo) {
+//
+//	
+//	
+
+	public static Saldo fromFileStringSaldo(String linha) {
+
+		String[] partes = linha.split(",");
+
+		float saldoTotal = Float.parseFloat(partes[0]);
+		float vendaTotal = Float.parseFloat(partes[1]);
+		float compraTotal = Float.parseFloat(partes[2]);
+
+		return new Saldo(saldoTotal, vendaTotal, compraTotal);
+	}
+
+	public List<Saldo> carregarSaldo(String caminhoArquivoSaldo) {
+		List<Saldo> valores = new ArrayList<>();
 
 		try {
-			// Cria um objeto FileReader para ler o arquivo
 			FileReader fileReader = new FileReader(caminhoArquivoSaldo);
-
-			// Cria um objeto BufferedReader para ler os dados de forma mais eficiente
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-			// Lê o valor do saldo do arquivo
-			String saldoStr = bufferedReader.readLine();
+			String linha;
+			while ((linha = bufferedReader.readLine()) != null) {
+				Saldo valor = entities.Saldo.fromFileStringSaldo(linha);
+				valores.add(valor);
+			}
 
-			// Converte o valor lido para float
-			float saldo = Float.parseFloat(saldoStr);
-
-			// Fecha o BufferedReader
 			bufferedReader.close();
-
-			// Retorna o valor saldo
-			return saldo;
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			return -1; // Retorna um valor padrão em caso de erro
 		}
+
+		return valores;
 	}
+
 }

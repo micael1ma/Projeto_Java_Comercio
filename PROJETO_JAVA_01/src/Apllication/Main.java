@@ -11,7 +11,6 @@ import entities.Saldo;
 import entities.Venda;
 import management.Gerenciador;
 
-
 public class Main {
 
 	public static void main(String[] args) {
@@ -29,10 +28,6 @@ public class Main {
 		String caminhoArquivoCompra = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\COMPRA.txt";
 		String caminhoArquivoVenda = "C:\\Users\\micae\\OneDrive\\Área de Trabalho\\VENDA.txt";
 
-		float saldo = Saldo.puxar(caminhoArquivoSaldo);
-		float saldoSessaoComprado = 0;
-		float saldoSessaoVendido = 0;
-
 		List<Produto> listaProdutos = Produto.carregarProdutos(caminhoArquivoProduto);
 
 		List<Venda> listaTodosProdutosVendidos = Venda.carregarProdutosVendidos(caminhoArquivoVenda);
@@ -40,6 +35,14 @@ public class Main {
 
 		List<Compra> listaTodosProdutosComprados = Compra.carregarProdutosComprados(caminhoArquivoCompra);
 		List<Compra> listaProdutosCompradoSessao = new ArrayList<>();
+
+		List<Saldo> listaSaldo = Saldo.carregarSaldo(caminhoArquivoSaldo);
+		float saldoTotalComprado = Saldo.getCompraTotal();
+		float saldoTotalVendido = Saldo.getVendaTotal();
+		float saldo = Saldo.getSaldoTotal();
+
+		float saldoSessaoComprado = 0;
+		float saldoSessaoVendido = 0;
 
 		int menu = 0;
 		while (menu != 7) {
@@ -56,10 +59,46 @@ public class Main {
 			System.out.println();
 			System.out.println("Digite a opção desejada: ");
 			System.out.println("_____________________________________________");
+			System.out.println(saldo);
+			System.out.println(saldoTotalComprado);
+			System.out.println();
 			menu = sc.nextInt();
 
 			if (menu == 1) { // LISTAR PRODUTOS
-				Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS
+				System.out.println("1) Listar todos prdutos.");
+				System.out.println("2) Listar todos prdutos de uma categoria.");
+				System.out.println("Digite a opção desejada: ");
+				int choice = sc.nextInt();
+				sc.nextLine();
+				
+				if (choice == 1) {
+					Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS
+				}
+
+				else if (choice == 2) {
+					System.out.println("Digite o nome da categoria: ");
+					String categoria = sc.nextLine();
+
+					for (Produto produto : listaProdutos) {
+						if (categoria.equals(produto.getCategoria())) {
+							int N = 0;
+						
+								N = N + 1;
+								System.out.printf(
+										"%d) %s (cód.: %d | estoque: %d | categoria: %s | custo: %.2f | venda: %.2f)%n",
+										N, produto.getNomeProduto(), produto.getCodProduto(), produto.getQuantProduto(),
+										produto.getCategoria(), produto.getCustoDeCompra(), produto.getValorDeVenda());
+							}else {
+								System.out.println("Categoria nao encontrada.");
+								break;
+
+						}
+					}
+
+				} else {
+					System.out.println("Opção invalida");
+				}
+
 			}
 
 			else if (menu == 2) { // ADICIONAR NOVO PRODUTO
@@ -142,8 +181,13 @@ public class Main {
 										+ newQuant);
 								produto.setQuantProduto(newQuant);
 
-								saldoSessaoComprado = saldoSessaoComprado + valorTotalDaCompra;
-								saldo = saldo - valorTotalDaCompra;
+								saldoSessaoComprado = saldoSessaoComprado + valorTotalDaCompra; // ATUALIZAR SALDO DE
+																								// COMPRA PARA RELATORIO
+																								// DA SESSAO
+								saldoTotalComprado = saldoTotalComprado + valorTotalDaCompra; // ATUALIZAR SALDO TOTAL
+																								// DE COMPRA
+
+								saldo = saldo - valorTotalDaCompra;// DESCONTAR DO SALDO
 
 								Compra NovaCompra = new Compra(cod, nameP, addQuant, valorTotalDaCompra);
 								listaProdutosCompradoSessao.add(NovaCompra);
@@ -159,34 +203,36 @@ public class Main {
 				}
 
 			} else if (menu == 4) { // REMOVER PRODUTO
-			    if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
-			    } else {
-			        Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
-			        System.out.println("Digite o código do produto a ser removido:");
-			        int codigoRemover = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA OBTER CÓDIGO V
-			        sc.nextLine();
+				if (Gerenciador.listaProdutosVazia(listaProdutos)) { // TRATAMENTO CASO LISTA ESTEJA VAZIA
+				} else {
+					Gerenciador.listarProdutos(listaProdutos); // LISTA PRODUTOS CADASTRADOS
+					System.out.println("Digite o código do produto a ser removido:");
+					int codigoRemover = Gerenciador.obterCodigoProdutoValido(listaProdutos, sc); // TRATAMENTO PARA
+																									// OBTER CÓDIGO V
+					sc.nextLine();
 
-			        Iterator<Produto> iterator = listaProdutos.iterator(); // NAO TENHO MINIMA IDEAI DO QUE E ISSO
-			        while (iterator.hasNext()) {
-			            Produto produto = iterator.next();
-			            if (produto.getCodProduto() == codigoRemover) {
-			                String produtoNome = produto.getNomeProduto();
-			                if (produto.getQuantProduto() > 0) { // CHECAR SE HÁ ESTOQUE
-			                    System.out.println("Tem certeza que deseja excluir " + produtoNome + " do sistema? (y/n) ");
-			                    String choice = sc.nextLine();
-			                    if (choice.equals("y")) {
-			                        iterator.remove(); // Remover o produto usando o iterador
-			                        System.out.println(produtoNome + " foi removido do sistema com sucesso.");
-			                    } else {
-			                        System.out.println("Operação cancelada.");
-			                    }
-			                } else {
-			                    iterator.remove(); // Remover o produto usando o iterador
-			                    System.out.println(produtoNome + " foi removido do sistema com sucesso.");
-			                }
-			            }
-			        }
-			    }
+					Iterator<Produto> iterator = listaProdutos.iterator(); // NAO TENHO MINIMA IDEAI DO QUE E ISSO
+					while (iterator.hasNext()) {
+						Produto produto = iterator.next();
+						if (produto.getCodProduto() == codigoRemover) {
+							String produtoNome = produto.getNomeProduto();
+							if (produto.getQuantProduto() > 0) { // CHECAR SE HÁ ESTOQUE
+								System.out.println(
+										"Tem certeza que deseja excluir " + produtoNome + " do sistema? (y/n) ");
+								String choice = sc.nextLine();
+								if (choice.equals("y")) {
+									iterator.remove(); // Remover o produto usando o iterador
+									System.out.println(produtoNome + " foi removido do sistema com sucesso.");
+								} else {
+									System.out.println("Operação cancelada.");
+								}
+							} else {
+								iterator.remove(); // Remover o produto usando o iterador
+								System.out.println(produtoNome + " foi removido do sistema com sucesso.");
+							}
+						}
+					}
+				}
 			}
 
 			else if (menu == 5) { // VENDER ESTOQUE //CONSERTA CASO ESTOQUE SEJA 0 // TRATAMENTO PARA ENTRADA
@@ -224,8 +270,13 @@ public class Main {
 									float ValordeVenda = produto.getValorDeVenda();
 									float ValorTotalDeVendaTotal = addQuant * ValordeVenda;
 
-									saldoSessaoVendido = saldoSessaoVendido + ValorTotalDeVendaTotal;
-									saldo = saldo + ValorTotalDeVendaTotal;
+									saldoSessaoVendido = saldoSessaoVendido + ValorTotalDeVendaTotal; // ATUALIZAR SALDO
+																										// DE VENDA PARA
+																										// RELATORIO DA
+																										// SESSAO
+									saldoTotalVendido = saldoTotalVendido + ValorTotalDeVendaTotal; // ATUALIZAR SALDO
+																									// DE VENDA TOTAL
+									saldo = saldo + ValorTotalDeVendaTotal; // ADICIONAR AO SALDO
 
 									Venda novaVenda = new Venda(cod, nameP, addQuant, ValorTotalDeVendaTotal);
 									listaProdutosVendidoSessao.add(novaVenda);
@@ -267,8 +318,8 @@ public class Main {
 					System.out.println("_____________________________________________");
 					System.out.println("");
 					System.out.println("Saldo R$: " + saldo);
-					System.out.println("Saldo arrecadado R$:" + saldoSessaoVendido);
-					System.out.println("Saldo gasto R$:" + saldoSessaoComprado);
+					System.out.println("Saldo arrecadado R$:" + saldoTotalVendido);
+					System.out.println("Saldo gasto R$:" + saldoTotalComprado);
 					System.out.println("_____________________________________________");
 					System.out.println("           Historico de vendas");
 					System.out.println("");
@@ -280,13 +331,14 @@ public class Main {
 
 				}
 			}
-		}
-		Produto.salvarProdutos(listaProdutos, caminhoArquivoProduto);
-		Compra.salvarProdutosComprados(listaTodosProdutosComprados, caminhoArquivoCompra);
-		Venda.salvarProdutosVendidos(listaTodosProdutosVendidos, caminhoArquivoVenda);		
-		Saldo.salvar(saldo, caminhoArquivoSaldo);
-		sc.close();
+		}Produto.salvarProdutos(listaProdutos,caminhoArquivoProduto);Compra.salvarProdutosComprados(listaTodosProdutosComprados,caminhoArquivoCompra);Venda.salvarProdutosVendidos(listaTodosProdutosVendidos,caminhoArquivoVenda);
 
-		System.out.println("Sistema encerrado.");
-	}
-}
+	listaSaldo.remove(0);
+
+	Saldo NovoSaldo = new Saldo(saldo, saldoSessaoComprado,
+			saldoTotalVendido);listaSaldo.add(NovoSaldo);Saldo.salvarSaldo(listaSaldo,caminhoArquivoSaldo);
+
+	sc.close();
+
+	System.out.println("Sistema encerrado.");
+}}

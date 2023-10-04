@@ -7,12 +7,12 @@ import entities.Produto;
 
 public class Gerenciador {
 
-//	1	Listar 		ok (listar apenas os produtos de uma determinada categoria)
-//	2	Cadastrar 	ok (o código NÃO PRECISA mais ser solicitado, e pode ser feito de forma sequencial)
+//	1	Listar 		ok (Listar apenas os produtos de uma determinada categoria)
+//	2	Cadastrar 	ok 
 //	3	Adicionar	ok 
 //	4	Remover		ok 
 //	5	Vender		ok 
-//	6	Relatório	ok 
+//	6	Relatório	ok (Saldo total)
 //	7	Sair 		ok  
 
 	public void listarProdutos(List<Produto> listaProdutos) {
